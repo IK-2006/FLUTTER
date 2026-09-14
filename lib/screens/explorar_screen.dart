@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cursos_provider.dart';
-import '../utils/app_cores.dart';
 import '../widgets/curso_card.dart';
 import '../widgets/estado_vazio.dart';
 import 'curso_detalhe_screen.dart';
