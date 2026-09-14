@@ -1,0 +1,9 @@
+# Regras de análise de código (lint) recomendadas para projetos Flutter.
+# Ajuda a manter o código limpo e a seguir as boas práticas da linguagem.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    avoid_print: true

@@ -1,0 +1,51 @@
+name: curso_stream
+description: "CursoStream - plataforma mobile para vender e assistir cursos online (estilo streaming)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Ícones no estilo iOS (já vem no template)
+  cupertino_icons: ^1.0.8
+
+  # Gerenciamento de estado
+  provider: ^6.1.2
+
+  # Persistência de dados (banco local)
+  sqflite: ^2.3.3
+  path: ^1.9.0
+
+  # Guarda a sessão do usuário logado
+  shared_preferences: ^2.2.3
+
+  # Comunicação com serviços externos (HTTP)
+  http: ^1.2.2
+
+  # Player de vídeo (streaming pela internet)
+  video_player: ^2.9.1
+  chewie: ^1.8.5
+
+  # Recurso do dispositivo: câmera / galeria
+  image_picker: ^1.1.2
+
+  # Recurso do dispositivo: compartilhamento
+  share_plus: ^10.0.2
+
+  # Formatação de valores em Real (R$)
+  intl: ^0.19.0
+
+  # Gera o hash da senha (boa prática para não salvar senha em texto puro)
+  crypto: ^3.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
