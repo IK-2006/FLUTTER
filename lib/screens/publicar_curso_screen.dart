@@ -234,7 +234,7 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
                 // Categoria
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _categoria,
+                    initialValue: _categoria,
                     decoration: const InputDecoration(labelText: 'Categoria'),
                     items: _categorias
                         .map((c) =>

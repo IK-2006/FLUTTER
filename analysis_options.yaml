@@ -1,5 +1,14 @@
 # Regras de análise de código (lint) recomendadas para projetos Flutter.
 # Ajuda a manter o código limpo e a seguir as boas práticas da linguagem.
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 include: package:flutter_lints/flutter.yaml
 
 linter:

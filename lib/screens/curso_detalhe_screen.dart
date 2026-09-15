@@ -82,6 +82,7 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
     );
 
     if (confirmar != true) return;
+    if (!mounted) return; // garante que a tela ainda existe após o diálogo
 
     await context
         .read<CursosProvider>()

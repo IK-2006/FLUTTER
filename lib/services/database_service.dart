@@ -4,7 +4,6 @@ import 'package:path/path.dart' as p;
 import '../models/usuario.dart';
 import '../models/curso.dart';
 import '../models/aula.dart';
-import '../models/matricula.dart';
 import 'seed_dados.dart';
 
 /// Serviço responsável por TODO o acesso ao banco de dados local (SQLite).

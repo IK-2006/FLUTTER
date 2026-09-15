@@ -131,7 +131,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         'Você poderá vender seus próprios cursos',
                         style: TextStyle(color: AppCores.textoSuave, fontSize: 12),
                       ),
-                      activeColor: AppCores.primaria,
+                      activeThumbColor: AppCores.primaria,
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 16),
