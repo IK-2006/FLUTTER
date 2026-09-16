@@ -84,6 +84,24 @@ flutter build apk --release
 
 O APK ficará em: `build/app/outputs/flutter-apk/app-release.apk`
 
+> Para gerar o APK é preciso ter o **Android SDK** instalado (vem com o
+> [Android Studio](https://developer.android.com/studio)).
+
+---
+
+## 💻 Testar rápido no navegador (sem Android SDK)
+
+Dá para rodar o app no Chrome para testar, mesmo sem o Android SDK. O banco
+de dados local (SQLite) também funciona na web graças aos pacotes
+`sqflite_common_ffi_web` (os arquivos de suporte já estão em `web/`).
+
+```bash
+flutter run -d chrome
+```
+
+> Observação: o app foi feito para **celular** (Android). No navegador/PC ele
+> funciona para testes, mas a experiência final e o APK são no Android.
+
 ---
 
 ## 🔑 Conta de teste (já vem cadastrada)

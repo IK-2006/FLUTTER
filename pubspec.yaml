@@ -19,6 +19,10 @@ dependencies:
   # Persistência de dados (banco local)
   sqflite: ^2.3.3
   path: ^1.9.0
+  # Fazem o sqflite funcionar também no computador (Windows/Linux/macOS) e na web,
+  # úteis para testar o app fora do celular. No Android/iOS não são necessários.
+  sqflite_common_ffi: ^2.3.3
+  sqflite_common_ffi_web: ^0.4.5
 
   # Guarda a sessão do usuário logado
   shared_preferences: ^2.2.3

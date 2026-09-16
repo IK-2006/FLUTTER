@@ -331,7 +331,7 @@ class _ControllersAula {
   final TextEditingController url = TextEditingController(
     // já vem com um vídeo de exemplo para facilitar o teste
     text:
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
   );
 
   void dispose() {

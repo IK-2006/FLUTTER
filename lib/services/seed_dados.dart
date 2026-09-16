@@ -5,10 +5,17 @@ import '../utils/seguranca.dart';
 /// já vem com um instrutor de exemplo e alguns cursos com vídeos reais
 /// (transmitidos pela internet).
 ///
-/// Os vídeos são amostras públicas do Google (não precisam de chave/API)
-/// e as imagens vêm do serviço público picsum.photos.
+/// Os vídeos são amostras públicas oficiais do Flutter (não precisam de
+/// chave/API e funcionam tanto no celular quanto no navegador) e as imagens
+/// vêm do serviço público picsum.photos.
 class SeedDados {
   SeedDados._();
+
+  // Vídeos de exemplo, públicos e confiáveis.
+  static const String _video1 =
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
+  static const String _video2 =
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
 
   // Conta de instrutor de demonstração.
   // Login: professor@cursostream.com  |  Senha: 123456
@@ -36,21 +43,9 @@ class SeedDados {
         'instrutor_id': instrutorId,
         'nome_instrutor': 'Prof. Ana Souza',
         'aulas': [
-          {
-            'titulo': 'Boas-vindas ao curso',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          },
-          {
-            'titulo': 'Instalando o ambiente',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-          },
-          {
-            'titulo': 'Primeiro app na tela',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-          },
+          {'titulo': 'Boas-vindas ao curso', 'video_url': _video1},
+          {'titulo': 'Instalando o ambiente', 'video_url': _video2},
+          {'titulo': 'Primeiro app na tela', 'video_url': _video1},
         ],
       },
       {
@@ -64,16 +59,8 @@ class SeedDados {
         'instrutor_id': instrutorId,
         'nome_instrutor': 'Prof. Ana Souza',
         'aulas': [
-          {
-            'titulo': 'O que é UX?',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-          },
-          {
-            'titulo': 'Escolhendo cores',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-          },
+          {'titulo': 'O que é UX?', 'video_url': _video2},
+          {'titulo': 'Escolhendo cores', 'video_url': _video1},
         ],
       },
       {
@@ -87,21 +74,9 @@ class SeedDados {
         'instrutor_id': instrutorId,
         'nome_instrutor': 'Prof. Ana Souza',
         'aulas': [
-          {
-            'titulo': 'Introdução ao marketing',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-          },
-          {
-            'titulo': 'Redes sociais na prática',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-          },
-          {
-            'titulo': 'Medindo resultados',
-            'video_url':
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-          },
+          {'titulo': 'Introdução ao marketing', 'video_url': _video1},
+          {'titulo': 'Redes sociais na prática', 'video_url': _video2},
+          {'titulo': 'Medindo resultados', 'video_url': _video1},
         ],
       },
     ];

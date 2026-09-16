@@ -21,18 +21,30 @@ class AuthProvider extends ChangeNotifier {
 
   /// Chamado quando o app abre, para ver se já tinha alguém logado.
   Future<void> recuperarSessao() async {
-    _usuarioAtual = await _authService.usuarioDaSessao();
+    try {
+      _usuarioAtual = await _authService.usuarioDaSessao();
+    } catch (_) {
+      // se der algum erro ao ler os dados, apenas continua deslogado
+      _usuarioAtual = null;
+    }
     notifyListeners();
   }
 
   Future<ResultadoAuth> login(String email, String senha) async {
     _setCarregando(true);
-    final resultado = await _authService.login(email: email, senha: senha);
-    if (resultado.sucesso) {
-      _usuarioAtual = resultado.usuario;
+    try {
+      final resultado = await _authService.login(email: email, senha: senha);
+      if (resultado.sucesso) {
+        _usuarioAtual = resultado.usuario;
+      }
+      return resultado;
+    } catch (e) {
+      // qualquer erro inesperado vira uma mensagem, evitando travar o app
+      return ResultadoAuth.erro('Erro ao acessar os dados. Tente novamente.');
+    } finally {
+      // o "finally" SEMPRE roda, então o loading nunca fica preso
+      _setCarregando(false);
     }
-    _setCarregando(false);
-    return resultado;
   }
 
   Future<ResultadoAuth> registrar({
@@ -42,17 +54,22 @@ class AuthProvider extends ChangeNotifier {
     required bool ehInstrutor,
   }) async {
     _setCarregando(true);
-    final resultado = await _authService.registrar(
-      nome: nome,
-      email: email,
-      senha: senha,
-      ehInstrutor: ehInstrutor,
-    );
-    if (resultado.sucesso) {
-      _usuarioAtual = resultado.usuario;
+    try {
+      final resultado = await _authService.registrar(
+        nome: nome,
+        email: email,
+        senha: senha,
+        ehInstrutor: ehInstrutor,
+      );
+      if (resultado.sucesso) {
+        _usuarioAtual = resultado.usuario;
+      }
+      return resultado;
+    } catch (e) {
+      return ResultadoAuth.erro('Erro ao acessar os dados. Tente novamente.');
+    } finally {
+      _setCarregando(false);
     }
-    _setCarregando(false);
-    return resultado;
   }
 
   Future<void> logout() async {

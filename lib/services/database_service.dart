@@ -28,9 +28,20 @@ class DatabaseService {
 
     return openDatabase(
       caminho,
-      version: 1,
+      version: 2,
       onCreate: _criarTabelas,
+      onUpgrade: _aoAtualizar,
     );
+  }
+
+  /// Roda quando a versão do banco aumenta. Aqui recriamos as tabelas para
+  /// aplicar correções nos dados iniciais (por exemplo, novos links de vídeo).
+  Future<void> _aoAtualizar(Database db, int versaoAntiga, int versaoNova) async {
+    await db.execute('DROP TABLE IF EXISTS matriculas');
+    await db.execute('DROP TABLE IF EXISTS aulas');
+    await db.execute('DROP TABLE IF EXISTS cursos');
+    await db.execute('DROP TABLE IF EXISTS usuarios');
+    await _criarTabelas(db, versaoNova);
   }
 
   /// Cria as tabelas na primeira vez e insere os dados iniciais (seed).

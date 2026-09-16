@@ -33,17 +33,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _prepararVideo() async {
-    // 1) verifica se o vídeo está disponível online (comunicação HTTP)
-    final disponivel = await NetworkService.videoDisponivel(widget.aula.videoUrl);
-    if (!disponivel) {
-      setState(() {
-        _erro = 'Não foi possível carregar o vídeo. Verifique sua conexão.';
-        _carregando = false;
-      });
-      return;
-    }
-
-    // 2) inicializa o player com a URL do vídeo
+    // Inicializa o player com a URL do vídeo (streaming pela internet).
     try {
       _videoController =
           VideoPlayerController.networkUrl(Uri.parse(widget.aula.videoUrl));
@@ -60,10 +50,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       );
 
+      if (!mounted) return;
       setState(() => _carregando = false);
     } catch (e) {
+      // Se falhar, usamos uma requisição HTTP para checar se é falta de
+      // internet e mostrar uma mensagem mais clara ao usuário.
+      final online = await NetworkService.videoDisponivel(widget.aula.videoUrl);
+      if (!mounted) return;
       setState(() {
-        _erro = 'Erro ao reproduzir o vídeo.';
+        _erro = online
+            ? 'Não foi possível reproduzir este vídeo.'
+            : 'Sem conexão com a internet. Verifique e tente novamente.';
         _carregando = false;
       });
     }
