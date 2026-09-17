@@ -4,8 +4,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../models/curso.dart';
 import '../models/aula.dart';
-import '../providers/auth_provider.dart';
-import '../providers/cursos_provider.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/cursos_controller.dart';
 import '../utils/app_cores.dart';
 import '../utils/formatadores.dart';
 import '../widgets/imagem_curso.dart';
@@ -36,8 +36,8 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
   }
 
   Future<void> _carregar() async {
-    final cursosProvider = context.read<CursosProvider>();
-    final usuario = context.read<AuthProvider>().usuarioAtual!;
+    final cursosProvider = context.read<CursosController>();
+    final usuario = context.read<AuthController>().usuarioAtual!;
 
     final curso = await cursosProvider.detalhesDoCurso(widget.cursoId);
     final matriculado =
@@ -55,7 +55,7 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
   /// Confirma e realiza a matrícula/compra do curso.
   Future<void> _matricular() async {
     final curso = _curso!;
-    final usuario = context.read<AuthProvider>().usuarioAtual!;
+    final usuario = context.read<AuthController>().usuarioAtual!;
 
     // pergunta de confirmação (Dialog)
     final confirmar = await showDialog<bool>(
@@ -85,7 +85,7 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
     if (!mounted) return; // garante que a tela ainda existe após o diálogo
 
     await context
-        .read<CursosProvider>()
+        .read<CursosController>()
         .matricular(usuario.id!, curso.id!);
 
     if (!mounted) return;

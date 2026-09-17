@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/splash_screen.dart';
+import 'views/splash_screen.dart';
 import 'utils/app_tema.dart';
 
 /// Widget principal do aplicativo.

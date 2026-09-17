@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models/curso.dart';
-import '../providers/auth_provider.dart';
-import '../providers/cursos_provider.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/cursos_controller.dart';
 import '../utils/app_cores.dart';
 import '../utils/formatadores.dart';
 import 'curso_detalhe_screen.dart';
@@ -45,12 +45,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     final arquivo = await ImagePicker().pickImage(source: origem, imageQuality: 70);
     if (arquivo != null && mounted) {
-      await context.read<AuthProvider>().atualizarPerfil(fotoPath: arquivo.path);
+      await context.read<AuthController>().atualizarPerfil(fotoPath: arquivo.path);
     }
   }
 
   Future<void> _editarNome() async {
-    final usuario = context.read<AuthProvider>().usuarioAtual!;
+    final usuario = context.read<AuthController>().usuarioAtual!;
     final controller = TextEditingController(text: usuario.nome);
 
     final novoNome = await showDialog<String>(
@@ -75,12 +75,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
     );
 
     if (novoNome != null && novoNome.isNotEmpty && mounted) {
-      await context.read<AuthProvider>().atualizarPerfil(nome: novoNome);
+      await context.read<AuthController>().atualizarPerfil(nome: novoNome);
     }
   }
 
   Future<void> _sair() async {
-    await context.read<AuthProvider>().logout();
+    await context.read<AuthController>().logout();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -90,7 +90,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final usuario = context.watch<AuthProvider>().usuarioAtual!;
+    final usuario = context.watch<AuthController>().usuarioAtual!;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -171,7 +171,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   /// Busca e mostra os cursos publicados pelo usuário.
   Widget _minhasPublicacoes(int instrutorId) {
     return FutureBuilder<List<Curso>>(
-      future: context.read<CursosProvider>().minhasPublicacoes(instrutorId),
+      future: context.read<CursosController>().minhasPublicacoes(instrutorId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Padding(

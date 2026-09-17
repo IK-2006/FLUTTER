@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models/aula.dart';
-import '../providers/auth_provider.dart';
-import '../providers/cursos_provider.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/cursos_controller.dart';
 import '../utils/app_cores.dart';
 
 /// Aba "Publicar Curso": formulário para o usuário criar e vender um curso.
@@ -95,7 +95,7 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
   Future<void> _publicar() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final usuario = context.read<AuthProvider>().usuarioAtual!;
+    final usuario = context.read<AuthController>().usuarioAtual!;
 
     // monta a lista de aulas a partir dos controllers
     final aulas = <Aula>[];
@@ -116,7 +116,7 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
     final preco =
         double.tryParse(_precoController.text.replaceAll(',', '.')) ?? 0.0;
 
-    await context.read<CursosProvider>().publicarCurso(
+    await context.read<CursosController>().publicarCurso(
           titulo: _tituloController.text.trim(),
           descricao: _descricaoController.text.trim(),
           preco: preco,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../controllers/auth_controller.dart';
 import '../utils/app_cores.dart';
 import 'home_screen.dart';
 import 'registro_screen.dart';
@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // valida o formulário; se algo estiver errado, para por aqui
     if (!_formKey.currentState!.validate()) return;
 
-    final auth = context.read<AuthProvider>();
+    final auth = context.read<AuthController>();
     final resultado = await auth.login(
       _emailController.text,
       _senhaController.text,
@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final carregando = context.watch<AuthProvider>().carregando;
+    final carregando = context.watch<AuthController>().carregando;
 
     return Scaffold(
       body: SafeArea(

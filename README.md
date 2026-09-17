@@ -32,7 +32,7 @@ Qualquer pessoa pode se cadastrar, **publicar seus próprios cursos** (com preç
 | Persistência de dados | **SQLite** (`sqflite`) + **SharedPreferences** para a sessão |
 | Comunicação com serviço externo | **HTTP** (`http`) e **streaming de vídeo** pela internet (`video_player`) |
 | Recurso do dispositivo | **Câmera/Galeria** (`image_picker`) e **Compartilhamento** (`share_plus`) |
-| Arquitetura organizada | Código em camadas (models, services, providers, screens, widgets, utils) |
+| Arquitetura organizada | Padrão **MVC**: Model (`models/` + `services/`), View (`views/` + `widgets/`), Controller (`controllers/`) |
 
 > Detalhes completos estão em **[DOCUMENTACAO.md](DOCUMENTACAO.md)**.
 
@@ -117,21 +117,27 @@ Você também pode criar sua própria conta na tela de cadastro.
 
 ## 🗂️ Estrutura de pastas
 
+Organizado em **MVC** (Model-View-Controller):
+
 ```
 lib/
-├── main.dart                # Início do app (configura os Providers)
+├── main.dart                # Início do app (configura os Controllers)
 ├── app.dart                 # MaterialApp (tema e tela inicial)
-├── models/                  # Classes de dados (Usuario, Curso, Aula, Matricula)
-├── services/                # Acesso a dados e serviços externos
+│
+├── models/                  # [MODEL] Classes de dados (Usuario, Curso, Aula, Matricula)
+├── services/                # [MODEL] Acesso a dados e serviços externos
 │   ├── database_service.dart   # Banco de dados SQLite
 │   ├── auth_service.dart       # Login/cadastro + sessão
 │   ├── network_service.dart    # Comunicação HTTP
+│   ├── database_config.dart    # Configura o banco por plataforma
 │   └── seed_dados.dart         # Dados iniciais (cursos de exemplo)
-├── providers/               # Gerenciamento de estado (Provider)
-│   ├── auth_provider.dart
-│   └── cursos_provider.dart
-├── screens/                 # Telas do aplicativo
-├── widgets/                 # Componentes reutilizáveis
+│
+├── controllers/             # [CONTROLLER] Estado e ações do usuário
+│   ├── auth_controller.dart
+│   └── cursos_controller.dart
+│
+├── views/                   # [VIEW] Telas do aplicativo
+├── widgets/                 # [VIEW] Componentes reutilizáveis
 └── utils/                   # Cores, tema, formatadores, segurança
 ```
 

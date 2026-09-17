@@ -8,7 +8,7 @@ import '../services/database_service.dart';
 ///
 /// Qualquer tela pode "ouvir" este provider para saber quem está logado
 /// e reagir quando o usuário entra ou sai da conta.
-class AuthProvider extends ChangeNotifier {
+class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final DatabaseService _db = DatabaseService.instancia;
 

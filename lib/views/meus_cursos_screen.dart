@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
-import '../providers/cursos_provider.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/cursos_controller.dart';
 import '../utils/app_cores.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/imagem_curso.dart';
@@ -24,15 +24,15 @@ class _MeusCursosScreenState extends State<MeusCursosScreen> {
   }
 
   void _carregar() {
-    final usuario = context.read<AuthProvider>().usuarioAtual;
+    final usuario = context.read<AuthController>().usuarioAtual;
     if (usuario != null) {
-      context.read<CursosProvider>().carregarMeusCursos(usuario.id!);
+      context.read<CursosController>().carregarMeusCursos(usuario.id!);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final meusCursos = context.watch<CursosProvider>().meusCursos;
+    final meusCursos = context.watch<CursosController>().meusCursos;
 
     if (meusCursos.isEmpty) {
       return const EstadoVazio(

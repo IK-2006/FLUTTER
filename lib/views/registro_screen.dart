@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../controllers/auth_controller.dart';
 import '../utils/app_cores.dart';
 import 'home_screen.dart';
 
@@ -31,7 +31,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
   Future<void> _cadastrar() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final auth = context.read<AuthProvider>();
+    final auth = context.read<AuthController>();
     final resultado = await auth.registrar(
       nome: _nomeController.text,
       email: _emailController.text,
@@ -58,7 +58,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final carregando = context.watch<AuthProvider>().carregando;
+    final carregando = context.watch<AuthController>().carregando;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Criar conta')),

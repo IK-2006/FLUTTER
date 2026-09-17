@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cursos_provider.dart';
+import '../controllers/cursos_controller.dart';
 import '../widgets/curso_card.dart';
 import '../widgets/estado_vazio.dart';
 import 'curso_detalhe_screen.dart';
@@ -23,7 +23,7 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
     // carrega os cursos assim que a tela abre.
     // usamos addPostFrameCallback para não chamar durante o build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CursosProvider>().carregarCatalogo();
+      context.read<CursosController>().carregarCatalogo();
     });
   }
 
@@ -35,7 +35,7 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cursosProvider = context.watch<CursosProvider>();
+    final cursosProvider = context.watch<CursosController>();
 
     return Column(
       children: [
@@ -74,7 +74,7 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
     );
   }
 
-  Widget _construirConteudo(CursosProvider provider) {
+  Widget _construirConteudo(CursosController provider) {
     if (provider.carregando) {
       return const Center(child: CircularProgressIndicator());
     }

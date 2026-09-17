@@ -6,7 +6,7 @@ import '../services/database_service.dart';
 
 /// Provider responsável pela lista de cursos:
 /// carregar o catálogo, buscar, publicar um novo curso e matricular o usuário.
-class CursosProvider extends ChangeNotifier {
+class CursosController extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instancia;
 
   List<Curso> _catalogo = [];

@@ -94,49 +94,64 @@ matricula e assiste pelo aplicativo.
 ## 4. Arquitetura da aplicação
 
 ### Padrão arquitetural utilizado
-O projeto usa uma **arquitetura em camadas** (também chamada de *layered architecture*),
-separando as responsabilidades em pastas diferentes. A ideia é que cada parte do
-código tenha uma única função, ficando mais fácil de entender e manter.
+O projeto foi organizado seguindo o padrão **MVC (Model-View-Controller)**,
+separando as responsabilidades em três camadas principais. A ideia é que cada
+parte do código tenha uma única função, ficando mais fácil de entender e manter.
+
+As três camadas do MVC no projeto:
+
+| Camada | O que faz | Pastas |
+|--------|-----------|--------|
+| **Model** | Representa os dados e cuida do acesso a eles (banco e internet) | `models/` + `services/` |
+| **View** | A interface: o que o usuário vê e toca | `views/` + `widgets/` |
+| **Controller** | Recebe as ações do usuário, atualiza o Model e a View | `controllers/` |
 
 O fluxo de dados segue assim:
 
 ```
-Telas (screens)  ->  Providers (estado)  ->  Services  ->  Banco de dados / Internet
-     (UI)                (lógica)          (acesso a dados)
+View (views/)  ->  Controller (controllers/)  ->  Model (services/ + models/)
+   (interface)         (lógica/estado)              (dados: SQLite / Internet)
 ```
 
-- As **telas** só cuidam da interface e chamam os providers.
-- Os **providers** guardam o estado e chamam os serviços.
-- Os **serviços** acessam o banco de dados (SQLite) e a internet (HTTP).
-- Os **models** representam os dados (Usuario, Curso, Aula, Matricula).
+- A **View** só cuida da interface e chama o Controller.
+- O **Controller** guarda o estado, recebe as ações e chama o Model.
+- O **Model** representa os dados (`models/`) e faz o acesso a eles (`services/`),
+  no banco SQLite e na internet (HTTP).
 
 Isso evita colocar toda a lógica dentro das telas — que é justamente o que o
 enunciado do trabalho pede para evitar.
+
+> Observação técnica: os Controllers são implementados com `ChangeNotifier` +
+> pacote **Provider**, que avisam a View quando o estado muda (`notifyListeners()`).
 
 ### Organização dos diretórios
 
 ```
 lib/
-├── main.dart          # Inicializa o app e os Providers
+├── main.dart          # Inicializa o app e os Controllers
 ├── app.dart           # Configura o MaterialApp (tema + tela inicial)
 │
+│   ┌──────────────── MODEL ────────────────┐
 ├── models/            # Classes de dados (representam as tabelas do banco)
 │   ├── usuario.dart
 │   ├── curso.dart
 │   ├── aula.dart
 │   └── matricula.dart
 │
-├── services/          # Acesso a dados e serviços externos
+├── services/          # Acesso a dados e serviços externos (parte do Model)
 │   ├── database_service.dart   # CRUD no SQLite
 │   ├── auth_service.dart       # Login, cadastro e sessão
 │   ├── network_service.dart    # Verificação HTTP
+│   ├── database_config.dart    # Configura o banco por plataforma
 │   └── seed_dados.dart         # Dados iniciais (cursos de exemplo)
 │
-├── providers/         # Gerenciamento de estado
-│   ├── auth_provider.dart      # Usuário logado
-│   └── cursos_provider.dart    # Catálogo, matrículas e publicação
+│   ┌──────────────── CONTROLLER ────────────┐
+├── controllers/       # Recebem as ações do usuário e guardam o estado
+│   ├── auth_controller.dart    # Usuário logado
+│   └── cursos_controller.dart  # Catálogo, matrículas e publicação
 │
-├── screens/           # Telas do aplicativo
+│   ┌──────────────── VIEW ──────────────────┐
+├── views/             # Telas do aplicativo
 │   ├── splash_screen.dart
 │   ├── login_screen.dart
 │   ├── registro_screen.dart
@@ -147,27 +162,28 @@ lib/
 │   ├── curso_detalhe_screen.dart
 │   └── player_screen.dart
 │
-├── widgets/           # Componentes reutilizáveis
+├── widgets/           # Componentes reutilizáveis (parte da View)
 │   ├── curso_card.dart
 │   ├── imagem_curso.dart
 │   └── estado_vazio.dart
 │
-└── utils/             # Utilidades
-    ├── app_cores.dart          # Paleta de cores
-    ├── app_tema.dart           # Tema visual
-    ├── formatadores.dart       # Formatação de preço e data
-    └── seguranca.dart          # Hash da senha
+└── utils/             # Utilidades (cores, tema, formatação, segurança)
+    ├── app_cores.dart
+    ├── app_tema.dart
+    ├── formatadores.dart
+    └── seguranca.dart
 ```
 
 ### Estratégia de gerenciamento de estado
-Foi utilizado o **Provider**, uma das formas mais recomendadas e simples de
-gerenciar estado no Flutter. Foram criados dois providers:
+Os **Controllers** são a camada de controle do MVC e foram implementados com
+`ChangeNotifier` + o pacote **Provider**, uma das formas mais recomendadas de
+gerenciar estado no Flutter. Foram criados dois controllers:
 
-- **`AuthProvider`** — guarda o usuário logado e reage a login, logout e edição de perfil.
-- **`CursosProvider`** — guarda a lista de cursos do catálogo e os cursos matriculados,
+- **`AuthController`** — guarda o usuário logado e reage a login, logout e edição de perfil.
+- **`CursosController`** — guarda a lista de cursos do catálogo e os cursos matriculados,
   além de tratar a publicação e a matrícula.
 
-As telas "ouvem" esses providers com `context.watch()` e reagem automaticamente
+As Views "ouvem" esses controllers com `context.watch()` e reagem automaticamente
 quando o estado muda (por exemplo, ao publicar um curso, o catálogo é recarregado).
 
 ### Modelo de dados (banco SQLite)

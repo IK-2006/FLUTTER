@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../controllers/auth_controller.dart';
 import '../utils/app_cores.dart';
 import 'explorar_screen.dart';
 import 'meus_cursos_screen.dart';
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   Future<void> _sair() async {
-    await context.read<AuthProvider>().logout();
+    await context.read<AuthController>().logout();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final usuario = context.watch<AuthProvider>().usuarioAtual;
+    final usuario = context.watch<AuthController>().usuarioAtual;
 
     return Scaffold(
       appBar: AppBar(title: Text(_titulos[_indiceAtual])),

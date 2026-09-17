@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../controllers/auth_controller.dart';
 import '../utils/app_cores.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _iniciar() async {
-    final auth = context.read<AuthProvider>();
+    final auth = context.read<AuthController>();
 
     // tenta recuperar a sessão salva (usuário que já estava logado)
     await auth.recuperarSessao();
