@@ -78,4 +78,11 @@ class CursosController extends ChangeNotifier {
   Future<List<Curso>> minhasPublicacoes(int instrutorId) {
     return _db.listarCursosDoInstrutor(instrutorId);
   }
+
+  /// Exclui um curso e atualiza o catálogo e a lista de matriculados.
+  Future<void> excluirCurso(int cursoId, int usuarioId) async {
+    await _db.excluirCurso(cursoId);
+    await carregarCatalogo();
+    await carregarMeusCursos(usuarioId);
+  }
 }

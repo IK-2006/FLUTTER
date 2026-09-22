@@ -223,6 +223,15 @@ class DatabaseService {
     return Curso.fromMap(resultado.first, aulas: aulas);
   }
 
+  /// Exclui um curso junto com suas aulas e matrículas.
+  Future<void> excluirCurso(int cursoId) async {
+    final db = await database;
+    // apagamos primeiro os registros ligados ao curso para não deixar "lixo"
+    await db.delete('matriculas', where: 'curso_id = ?', whereArgs: [cursoId]);
+    await db.delete('aulas', where: 'curso_id = ?', whereArgs: [cursoId]);
+    await db.delete('cursos', where: 'id = ?', whereArgs: [cursoId]);
+  }
+
   // ==================== AULAS ====================
 
   Future<List<Aula>> listarAulasDoCurso(int cursoId) async {

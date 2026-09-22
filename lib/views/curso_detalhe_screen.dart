@@ -108,6 +108,52 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
     );
   }
 
+  /// Exclui o curso (somente o instrutor dono pode fazer isso).
+  Future<void> _excluir() async {
+    final curso = _curso!;
+    final usuario = context.read<AuthController>().usuarioAtual!;
+
+    // pede confirmação antes de excluir
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Excluir curso'),
+        content: Text(
+          'Tem certeza que deseja excluir "${curso.titulo}"? '
+          'Esta ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppCores.erro),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar != true) return;
+    if (!mounted) return;
+
+    await context
+        .read<CursosController>()
+        .excluirCurso(curso.id!, usuario.id!);
+
+    if (!mounted) return;
+    // mostra o aviso e volta para a tela anterior
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Curso excluído.'),
+        backgroundColor: AppCores.sucesso,
+      ),
+    );
+    Navigator.of(context).pop();
+  }
+
   void _abrirAula(Aula aula) {
     if (!_temAcesso) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,6 +190,13 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
             icon: const Icon(Icons.share),
             onPressed: _compartilhar,
           ),
+          // botão de excluir aparece apenas para o instrutor dono do curso
+          if (_ehDono)
+            IconButton(
+              icon: const Icon(Icons.delete, color: AppCores.erro),
+              tooltip: 'Excluir curso',
+              onPressed: _excluir,
+            ),
         ],
       ),
       body: ListView(

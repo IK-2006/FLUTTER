@@ -168,6 +168,46 @@ class _PerfilScreenState extends State<PerfilScreen> {
     );
   }
 
+  /// Exclui um curso publicado pelo usuário (com confirmação).
+  Future<void> _excluirCurso(Curso curso) async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Excluir curso'),
+        content: Text(
+          'Tem certeza que deseja excluir "${curso.titulo}"? '
+          'Esta ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppCores.erro),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar != true || !mounted) return;
+
+    final usuario = context.read<AuthController>().usuarioAtual!;
+    await context.read<CursosController>().excluirCurso(curso.id!, usuario.id!);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Curso excluído.'),
+        backgroundColor: AppCores.sucesso,
+      ),
+    );
+    // atualiza a lista de cursos publicados
+    setState(() {});
+  }
+
   /// Busca e mostra os cursos publicados pelo usuário.
   Widget _minhasPublicacoes(int instrutorId) {
     return FutureBuilder<List<Curso>>(
@@ -200,7 +240,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 subtitle: Text(curso.ehGratuito
                     ? 'Grátis'
                     : Formatadores.preco(curso.preco)),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: AppCores.erro),
+                  tooltip: 'Excluir curso',
+                  onPressed: () => _excluirCurso(curso),
+                ),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
