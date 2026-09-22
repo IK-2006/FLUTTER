@@ -28,7 +28,7 @@ class DatabaseService {
 
     return openDatabase(
       caminho,
-      version: 2,
+      version: 3,
       onCreate: _criarTabelas,
       onUpgrade: _aoAtualizar,
     );

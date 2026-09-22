@@ -21,7 +21,7 @@ class SeedDados {
   // Login: professor@cursostream.com  |  Senha: 123456
   static Map<String, dynamic> instrutorDemo() {
     return {
-      'nome': 'Prof. Ana Souza',
+      'nome': 'Inácio dos Santos Kunz',
       'email': 'professor@cursostream.com',
       'senha_hash': Seguranca.gerarHash('123456'),
       'eh_instrutor': 1,
@@ -41,7 +41,7 @@ class SeedDados {
         'categoria': 'Programação',
         'thumbnail': 'https://picsum.photos/seed/flutter/600/360',
         'instrutor_id': instrutorId,
-        'nome_instrutor': 'Prof. Ana Souza',
+        'nome_instrutor': 'Inácio dos Santos Kunz',
         'aulas': [
           {'titulo': 'Boas-vindas ao curso', 'video_url': _video1},
           {'titulo': 'Instalando o ambiente', 'video_url': _video2},
@@ -57,7 +57,7 @@ class SeedDados {
         'categoria': 'Design',
         'thumbnail': 'https://picsum.photos/seed/design/600/360',
         'instrutor_id': instrutorId,
-        'nome_instrutor': 'Prof. Ana Souza',
+        'nome_instrutor': 'Inácio dos Santos Kunz',
         'aulas': [
           {'titulo': 'O que é UX?', 'video_url': _video2},
           {'titulo': 'Escolhendo cores', 'video_url': _video1},
@@ -72,7 +72,7 @@ class SeedDados {
         'categoria': 'Marketing',
         'thumbnail': 'https://picsum.photos/seed/marketing/600/360',
         'instrutor_id': instrutorId,
-        'nome_instrutor': 'Prof. Ana Souza',
+        'nome_instrutor': 'Inácio dos Santos Kunz',
         'aulas': [
           {'titulo': 'Introdução ao marketing', 'video_url': _video1},
           {'titulo': 'Redes sociais na prática', 'video_url': _video2},
