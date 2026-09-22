@@ -10,6 +10,7 @@ import '../utils/app_cores.dart';
 import '../utils/formatadores.dart';
 import '../widgets/imagem_curso.dart';
 import 'player_screen.dart';
+import 'publicar_curso_screen.dart';
 
 /// Tela de detalhes de um curso.
 /// Mostra as informações, a lista de aulas e o botão de matrícula/compra.
@@ -108,6 +109,21 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
     );
   }
 
+  /// Abre a tela de edição do curso (somente o dono) e recarrega ao voltar.
+  Future<void> _editar() async {
+    final atualizado = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => PublicarCursoScreen(cursoParaEditar: _curso),
+      ),
+    );
+
+    // se o curso foi salvo, recarrega os detalhes para mostrar as mudanças
+    if (atualizado == true && mounted) {
+      setState(() => _carregando = true);
+      await _carregar();
+    }
+  }
+
   /// Exclui o curso (somente o instrutor dono pode fazer isso).
   Future<void> _excluir() async {
     final curso = _curso!;
@@ -190,7 +206,13 @@ class _CursoDetalheScreenState extends State<CursoDetalheScreen> {
             icon: const Icon(Icons.share),
             onPressed: _compartilhar,
           ),
-          // botão de excluir aparece apenas para o instrutor dono do curso
+          // botões de editar e excluir aparecem apenas para o dono do curso
+          if (_ehDono)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Editar curso',
+              onPressed: _editar,
+            ),
           if (_ehDono)
             IconButton(
               icon: const Icon(Icons.delete, color: AppCores.erro),

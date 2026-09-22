@@ -4,14 +4,24 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models/aula.dart';
+import '../models/curso.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/cursos_controller.dart';
 import '../utils/app_cores.dart';
+import '../widgets/imagem_curso.dart';
 
-/// Aba "Publicar Curso": formulário para o usuário criar e vender um curso.
+/// Formulário para criar OU editar um curso.
+///
+/// - Quando usada como aba (sem [cursoParaEditar]), funciona no modo "criar".
+/// - Quando aberta com um [cursoParaEditar], funciona no modo "editar":
+///   o formulário já vem preenchido e o botão salva as alterações.
+///
 /// Aqui usamos o recurso do dispositivo (câmera/galeria) para a capa do curso.
 class PublicarCursoScreen extends StatefulWidget {
-  const PublicarCursoScreen({super.key});
+  /// Se vier um curso, a tela abre em modo edição. Se for null, é criação.
+  final Curso? cursoParaEditar;
+
+  const PublicarCursoScreen({super.key, this.cursoParaEditar});
 
   @override
   State<PublicarCursoScreen> createState() => _PublicarCursoScreenState();
@@ -35,9 +45,43 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
 
   // caminho da foto de capa escolhida no celular (null = ainda não escolheu)
   String? _capaPath;
+  // capa que o curso já tinha (usada no modo edição, pode ser URL ou arquivo)
+  String? _capaExistente;
 
   // controllers das aulas (cada aula tem título e URL do vídeo)
   final List<_ControllersAula> _aulas = [_ControllersAula()];
+
+  /// true quando estamos editando um curso já existente.
+  bool get _editando => widget.cursoParaEditar != null;
+
+  @override
+  void initState() {
+    super.initState();
+    // no modo edição, preenchemos o formulário com os dados do curso
+    final curso = widget.cursoParaEditar;
+    if (curso != null) {
+      _tituloController.text = curso.titulo;
+      _descricaoController.text = curso.descricao;
+      _precoController.text =
+          curso.preco == 0 ? '0' : curso.preco.toStringAsFixed(2);
+      _categoria =
+          _categorias.contains(curso.categoria) ? curso.categoria : 'Outros';
+      _capaExistente = curso.thumbnail;
+
+      // troca as aulas iniciais pelas aulas reais do curso
+      for (final aula in _aulas) {
+        aula.dispose();
+      }
+      _aulas.clear();
+      for (final aula in curso.aulas) {
+        final c = _ControllersAula();
+        c.titulo.text = aula.titulo;
+        c.url.text = aula.videoUrl;
+        _aulas.add(c);
+      }
+      if (_aulas.isEmpty) _aulas.add(_ControllersAula());
+    }
+  }
 
   @override
   void dispose() {
@@ -92,7 +136,7 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
     });
   }
 
-  Future<void> _publicar() async {
+  Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
 
     final usuario = context.read<AuthController>().usuarioAtual!;
@@ -101,41 +145,73 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
     final aulas = <Aula>[];
     for (int i = 0; i < _aulas.length; i++) {
       aulas.add(Aula(
-        cursoId: 0, // será preenchido pelo banco ao salvar
+        cursoId: widget.cursoParaEditar?.id ?? 0,
         titulo: _aulas[i].titulo.text.trim(),
         videoUrl: _aulas[i].url.text.trim(),
         ordem: i + 1,
       ));
     }
 
-    // se o usuário não escolheu capa, usamos uma imagem da internet baseada no título
+    // capa: a nova escolhida, ou a que já existia, ou uma imagem da internet
     final capa = _capaPath ??
+        _capaExistente ??
         'https://picsum.photos/seed/${Uri.encodeComponent(_tituloController.text)}/600/360';
 
     // troca vírgula por ponto para aceitar "49,90" e "49.90"
     final preco =
         double.tryParse(_precoController.text.replaceAll(',', '.')) ?? 0.0;
 
-    await context.read<CursosController>().publicarCurso(
-          titulo: _tituloController.text.trim(),
-          descricao: _descricaoController.text.trim(),
-          preco: preco,
-          categoria: _categoria,
-          thumbnail: capa,
-          instrutorId: usuario.id!,
-          nomeInstrutor: usuario.nome,
-          aulas: aulas,
-        );
+    final controller = context.read<CursosController>();
 
-    if (!mounted) return;
+    if (_editando) {
+      // MODO EDITAR: atualiza o curso existente
+      final cursoAtualizado = Curso(
+        id: widget.cursoParaEditar!.id,
+        titulo: _tituloController.text.trim(),
+        descricao: _descricaoController.text.trim(),
+        preco: preco,
+        categoria: _categoria,
+        thumbnail: capa,
+        instrutorId: widget.cursoParaEditar!.instrutorId,
+        nomeInstrutor: widget.cursoParaEditar!.nomeInstrutor,
+      );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Curso publicado com sucesso!'),
-        backgroundColor: AppCores.sucesso,
-      ),
-    );
-    _limparFormulario();
+      await controller.editarCurso(
+        curso: cursoAtualizado,
+        aulas: aulas,
+        usuarioId: usuario.id!,
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Curso atualizado!'),
+          backgroundColor: AppCores.sucesso,
+        ),
+      );
+      Navigator.of(context).pop(true); // volta para a tela de detalhes
+    } else {
+      // MODO CRIAR: publica um curso novo
+      await controller.publicarCurso(
+        titulo: _tituloController.text.trim(),
+        descricao: _descricaoController.text.trim(),
+        preco: preco,
+        categoria: _categoria,
+        thumbnail: capa,
+        instrutorId: usuario.id!,
+        nomeInstrutor: usuario.nome,
+        aulas: aulas,
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Curso publicado com sucesso!'),
+          backgroundColor: AppCores.sucesso,
+        ),
+      );
+      _limparFormulario();
+    }
   }
 
   void _limparFormulario() {
@@ -156,42 +232,14 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    final formulario = SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Capa do curso
-            GestureDetector(
-              onTap: _escolherCapa,
-              child: Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  color: AppCores.card,
-                  borderRadius: BorderRadius.circular(16),
-                  image: _capaPath != null
-                      ? DecorationImage(
-                          image: FileImage(File(_capaPath!)),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: _capaPath != null
-                    ? null
-                    : const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_a_photo,
-                              size: 40, color: AppCores.textoSuave),
-                          SizedBox(height: 8),
-                          Text('Toque para adicionar a capa',
-                              style: TextStyle(color: AppCores.textoSuave)),
-                        ],
-                      ),
-              ),
-            ),
+            _construirCapa(),
             const SizedBox(height: 16),
 
             TextFormField(
@@ -262,14 +310,70 @@ class _PublicarCursoScreenState extends State<PublicarCursoScreen> {
             const SizedBox(height: 24),
 
             ElevatedButton.icon(
-              onPressed: _publicar,
-              icon: const Icon(Icons.publish),
-              label: const Text('Publicar curso'),
+              onPressed: _salvar,
+              icon: Icon(_editando ? Icons.save : Icons.publish),
+              label: Text(_editando ? 'Salvar alterações' : 'Publicar curso'),
             ),
           ],
         ),
       ),
     );
+
+    // No modo criar, a tela é uma aba (o Scaffold vem da Home).
+    // No modo editar, ela é aberta como tela própria, então tem seu Scaffold.
+    if (!_editando) return formulario;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Editar curso')),
+      body: formulario,
+    );
+  }
+
+  /// Área da capa: mostra a nova imagem, a capa atual ou o "toque para adicionar".
+  Widget _construirCapa() {
+    Widget conteudo;
+
+    if (_capaPath != null) {
+      // imagem nova escolhida do aparelho
+      conteudo = ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.file(
+          File(_capaPath!),
+          height: 160,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (_capaExistente != null) {
+      // capa que o curso já tinha (URL ou arquivo)
+      conteudo = ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: ImagemCurso(
+          caminho: _capaExistente!,
+          altura: 160,
+          largura: double.infinity,
+        ),
+      );
+    } else {
+      // sem capa ainda
+      conteudo = Container(
+        height: 160,
+        decoration: BoxDecoration(
+          color: AppCores.card,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_a_photo, size: 40, color: AppCores.textoSuave),
+            SizedBox(height: 8),
+            Text('Toque para adicionar a capa',
+                style: TextStyle(color: AppCores.textoSuave)),
+          ],
+        ),
+      );
+    }
+
+    return GestureDetector(onTap: _escolherCapa, child: conteudo);
   }
 
   List<Widget> _construirCamposAulas() {

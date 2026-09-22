@@ -79,6 +79,17 @@ class CursosController extends ChangeNotifier {
     return _db.listarCursosDoInstrutor(instrutorId);
   }
 
+  /// Edita um curso existente e recarrega o catálogo.
+  Future<void> editarCurso({
+    required Curso curso,
+    required List<Aula> aulas,
+    required int usuarioId,
+  }) async {
+    await _db.atualizarCurso(curso, aulas);
+    await carregarCatalogo();
+    await carregarMeusCursos(usuarioId);
+  }
+
   /// Exclui um curso e atualiza o catálogo e a lista de matriculados.
   Future<void> excluirCurso(int cursoId, int usuarioId) async {
     await _db.excluirCurso(cursoId);

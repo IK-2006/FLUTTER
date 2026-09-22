@@ -223,6 +223,37 @@ class DatabaseService {
     return Curso.fromMap(resultado.first, aulas: aulas);
   }
 
+  /// Atualiza os dados de um curso e recria as suas aulas.
+  Future<void> atualizarCurso(Curso curso, List<Aula> aulas) async {
+    final db = await database;
+
+    // atualiza os campos do curso (mantém instrutor e nome do instrutor)
+    await db.update(
+      'cursos',
+      {
+        'titulo': curso.titulo,
+        'descricao': curso.descricao,
+        'preco': curso.preco,
+        'categoria': curso.categoria,
+        'thumbnail': curso.thumbnail,
+      },
+      where: 'id = ?',
+      whereArgs: [curso.id],
+    );
+
+    // a forma mais simples de atualizar as aulas é apagar as antigas
+    // e inserir as novas na ordem em que estão no formulário
+    await db.delete('aulas', where: 'curso_id = ?', whereArgs: [curso.id]);
+    for (int i = 0; i < aulas.length; i++) {
+      await db.insert('aulas', {
+        'curso_id': curso.id,
+        'titulo': aulas[i].titulo,
+        'video_url': aulas[i].videoUrl,
+        'ordem': i + 1,
+      });
+    }
+  }
+
   /// Exclui um curso junto com suas aulas e matrículas.
   Future<void> excluirCurso(int cursoId) async {
     final db = await database;
